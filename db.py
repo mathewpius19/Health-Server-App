@@ -26,7 +26,9 @@ def login():
     cur=conn.cursor()
     cur.execute("select exists(select username from user where username=(?))",(username,))
     for row in cur:
-        if len(list(row))==0:
+        print(row)
+        rowlist=list(row)
+        if rowlist[0]==0:
             print("Username does not exist")
             sys.exit()
     conn.commit()

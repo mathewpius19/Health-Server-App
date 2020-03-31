@@ -71,7 +71,6 @@ def server():
         conn.execute(f'insert into {ip_address} (Disk_Free,Bytes_Sent,Bytes_Received,Packets_Sent,Packets_Received,Memory_Free,Cpu_Usage_Percent,Cpu_Time) values {Disk_Free,Bytes_Sent,Bytes_Received,Packets_Sent,Packets_Received,Memory_Free,Cpu_Usage_Percent,Cpu_Time}')
     finally:
         conn.commit()
-        print(len(priv_key))
         return "yes"
        
 

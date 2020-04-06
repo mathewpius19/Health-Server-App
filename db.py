@@ -1,9 +1,8 @@
 import sqlite3
-from flask import Flask,redirect,url_for
+from flask import Flask
 from flask import request
 import json
 import sys
-import Health as Hel
 
 app=Flask(__name__)
 @app.route("/Health",methods=['POST'])
@@ -15,7 +14,7 @@ def health():
     try:
         if password=="NULL" or not password or password.isspace():
             raise Exception
-    except Exception as e:
+    except Exception:
         print("Password cannot be NULL")
     else:       
        
@@ -24,7 +23,7 @@ def health():
     finally:
         conn.commit()
         return "yes"
-@app.route("/login",methods=['POST'])
+@app.route("/login",methods=['POST']) 
 def login():
     object=request.json
     username=object["Username"]
@@ -51,6 +50,8 @@ def server():
     username=object["Username"]
     ip_address=object["IP Address"]
     priv_key=object["Private Key"]
+    newip=ip_address.replace('.','_')
+    newip="ip:"+newip
     conn=sqlite3.connect("Health.db")
     try:
         if priv_key=="NULL" or  not priv_key or priv_key.isspace():
@@ -59,23 +60,32 @@ def server():
             print("Private Key cannot be NULL")
     else:
         conn.execute(f'insert into {username} (IP_Address,Private_Key) values {ip_address,priv_key}')
-        conn.execute(f"create table if not exists {ip_address} (HEALTH_ID integer primary key AUTOINCREMENT,Disk_Free varchar(80),Bytes_Sent varchar(80),Bytes_Received varchar(80),Packets_Sent varchar(80),Packets_Received varchar(80),Memory_Free varchar(80),Cpu_Usage_Percent varchar(80),Cpu_Time varchar(80));")
-        Cpu_Usage_Percent=Hel.cpupercent
-        Cpu_Time=Hel.cpu_total
-        Disk_Free=Hel.free_Percnt
-        Bytes_Sent=Hel.bytes_sent
-        Bytes_Received=Hel.bytes_received
-        Packets_Sent=Hel.packets_sent
-        Packets_Received=Hel.packets_received
-        Memory_Free=Hel.memory_Free
-        conn.execute(f'insert into {ip_address} (Disk_Free,Bytes_Sent,Bytes_Received,Packets_Sent,Packets_Received,Memory_Free,Cpu_Usage_Percent,Cpu_Time) values {Disk_Free,Bytes_Sent,Bytes_Received,Packets_Sent,Packets_Received,Memory_Free,Cpu_Usage_Percent,Cpu_Time}')
+        
     finally:
         conn.commit()
         return "yes"
-       
 
 
-   
+
+@app.route("/report",methods=['POST'])
+def report():
+    incoming_report = request.get_json()
+    print("Generating Health report")
+    server_name=incoming_report["SERVER_NAME"]
+    disk_free=incoming_report["free_Percnt"]
+    bytes_sent=incoming_report["bytes_sent"]
+    bytes_received=incoming_report["bytes_received"]
+    packets_sent=incoming_report["packets_sent"]
+    packets_received=incoming_report["packets_received"]
+    memory_free=incoming_report["memory_Free"]
+    cpu_percent=incoming_report["cpupercent"]
+    cpu_total=incoming_report["cpu_total"]
+    conn=sqlite3.connect("Health.db")
+    conn.execute(f"create table if not exists {server_name} (HEALTH_ID integer primary key AUTOINCREMENT,Disk_Free varchar(80),Bytes_Sent varchar(80),Bytes_Received varchar(80),Packets_Sent varchar(80),Packets_Received varchar(80),Memory_Free varchar(80),Cpu_Usage_Percent varchar(80),Cpu_Time varchar(80));")
+    conn.execute(f'insert into {server_name} (Disk_Free,Bytes_Sent,Bytes_Received,Packets_Sent,Packets_Received,Memory_Free,Cpu_Usage_Percent,Cpu_Time) values {disk_free,bytes_sent,bytes_received,packets_sent,packets_received,memory_free,cpu_percent,cpu_total}')
+    conn.commit()
+    return {'message': 'success'}
+
 
 if __name__ ==("__main__"):
-    app.run(debug=True)
+    app.run(debug=True,port=8080)

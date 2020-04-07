@@ -15,7 +15,8 @@ def get_health():
 
     # The keys in this dict should match the db cols
     report = dict (
-        SERVER_NAME="Test_Local_Server",
+        USER_NAME="USER",
+        SERVER_NAME="Test_Server",
         cpupercent = cpu_percent,
         cpu_total = ctime.user + ctime.system,
         free_Percnt=((disk_usage.free/disk_usage.used)*100),

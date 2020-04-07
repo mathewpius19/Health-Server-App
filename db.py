@@ -5,7 +5,7 @@ import json
 import time
 import csv
 app=Flask(__name__)
-@app.route("/Health",methods=['POST'])
+@app.route("/Registration",methods=['POST'])
 def health():
     object=request.json
     username=object["Username"]
@@ -67,52 +67,61 @@ def server():
 
 
 
-@app.route("/report",methods=['POST'])
+@app.route("/report",methods=['GET','POST'])
 def report():
-    time_epoch=time.time()
-    incoming_report = request.get_json()
-    print("Generating Health report")
-    server_name=incoming_report["SERVER_NAME"]
-    disk_free=incoming_report["free_Percnt"]
-    bytes_sent=incoming_report["bytes_sent"]
-    bytes_received=incoming_report["bytes_received"]
-    packets_sent=incoming_report["packets_sent"]
-    packets_received=incoming_report["packets_received"]
-    memory_free=incoming_report["memory_Free"]
-    cpu_percent=incoming_report["cpupercent"]
-    cpu_total=incoming_report["cpu_total"]
-    conn=sqlite3.connect("Health.db")
-    conn.execute(f"create table if not exists {server_name} (HEALTH_ID integer primary key AUTOINCREMENT,Time_Epoch integer,Disk_Free varchar(80),Bytes_Sent varchar(80),Bytes_Received varchar(80),Packets_Sent varchar(80),Packets_Received varchar(80),Memory_Free varchar(80),Cpu_Usage_Percent varchar(80),Cpu_Time varchar(80));")
-    conn.execute(f'insert into {server_name} (Time_Epoch,Disk_Free,Bytes_Sent,Bytes_Received,Packets_Sent,Packets_Received,Memory_Free,Cpu_Usage_Percent,Cpu_Time) values {time_epoch,disk_free,bytes_sent,bytes_received,packets_sent,packets_received,memory_free,cpu_percent,cpu_total}')
-    cur=conn.cursor()
-    details=input("Do you want all,last 10 or first 10?")
-    try:
-        if details=="NULL" or  not details or details.isspace() or details !='all' or details!='last 10' or details!= 'first 10':
-            raise Exception
-    except Exception:
-        print("Invalid input")
-    else:
-        if details=='all':
-            cur.execute(f" select * from {server_name} order by HEALTH_ID")
-        elif details=='last 10':
-            cur.execute(f" select * from {server_name} order by HEALTH_ID desc limit 10")
-        else:
-            cur.execute(f" select * from {server_name} order by HEALTH_ID asc limit 10")
-
-        health_list=[]    
-        for row in cur:
-            tuple1=row
-            tuple2=('Health_id','Epoch_Time','Disk_Free','Bytes_Sent','Bytes_Received','Memory_Free','CPU_Usage_Percent','CPU_Time')
-            health_dict=dict(zip(tuple2,tuple1))
-            health_list.append(health_dict)
-        keys_list=['Health_id','Epoch_Time','Disk_Free','Bytes_Sent','Bytes_Received','Memory_Free','CPU_Usage_Percent','CPU_Time']
-        with open("Health.csv",'w+') as health:
-            writer=csv.DictWriter(health,fieldnames=keys_list)
-            writer.writeheader()
-            writer.writerows(health_list)
-    finally:
+    if request.method=='POST':
+        time_epoch=time.time()
+        incoming_report = request.get_json()
+        print("Generating Health report")
+        server_name=incoming_report["SERVER_NAME"]
+        disk_free=incoming_report["free_Percnt"]
+        bytes_sent=incoming_report["bytes_sent"]
+        bytes_received=incoming_report["bytes_received"]
+        packets_sent=incoming_report["packets_sent"]
+        packets_received=incoming_report["packets_received"]
+        memory_free=incoming_report["memory_Free"]
+        cpu_percent=incoming_report["cpupercent"]
+        cpu_total=incoming_report["cpu_total"]
+        conn=sqlite3.connect("Health.db")
+        conn.execute(f"create table if not exists {server_name} (HEALTH_ID integer primary key AUTOINCREMENT,Time_Epoch integer,Disk_Free varchar(80),Bytes_Sent varchar(80),Bytes_Received varchar(80),Packets_Sent varchar(80),Packets_Received varchar(80),Memory_Free varchar(80),Cpu_Usage_Percent varchar(80),Cpu_Time varchar(80));")
+        conn.execute(f'insert into {server_name} (Time_Epoch,Disk_Free,Bytes_Sent,Bytes_Received,Packets_Sent,Packets_Received,Memory_Free,Cpu_Usage_Percent,Cpu_Time) values {time_epoch,disk_free,bytes_sent,bytes_received,packets_sent,packets_received,memory_free,cpu_percent,cpu_total}')
         conn.commit()
         return {'message': 'success'}
+
+    if request.method=='GET':
+        print(serverds=server_name)
+        conn=sqlite3.connect('Health.db')
+        cur=conn.cursor()  
+        details=input("Do you want all,last 5 or first 5?")
+        try:
+            if details=="NULL" or  not details or details.isspace() or not 'all' or not 'last 5' or not 'first 5':
+                raise Exception
+        except Exception:
+            print("Invalid input")
+        else:
+            if details=='all':
+                cur.execute(f" select * from {server_name} order by HEALTH_ID")
+            elif (details=='last 5'):
+                cur.execute(f" select * from {server_name} order by HEALTH_ID desc limit 5")
+            else:
+                cur.execute(f" select * from {server_name} order by HEALTH_ID asc limit 5")
+
+            health_list=[]    
+            for row in cur:
+                tuple1=row
+                tuple2=('Health_id','Epoch_Time','Disk_Free','Bytes_Sent','Bytes_Received','Packets_Sent','Packets_Received','Memory_Free','CPU_Usage_Percent','CPU_Time')
+                health_dict=dict(zip(tuple2,tuple1))
+                health_list.append(health_dict)
+            keys_list=['Health_id','Epoch_Time','Disk_Free','Bytes_Sent','Bytes_Received','Packets_Sent','Packets_Received','Memory_Free','CPU_Usage_Percent','CPU_Time']
+            with open("Health.csv",'w+') as health:
+                writer=csv.DictWriter(health,fieldnames=keys_list)
+                writer.writeheader()
+                writer.writerows(health_list)
+        finally:
+            conn.commit()
+            return {'message':'success'}
+
+
 
 if __name__ ==("__main__"):
     app.run(debug=True,port=8080)

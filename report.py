@@ -18,7 +18,7 @@ def get_health():
         SERVER_NAME="Test_Local_Server",
         cpupercent = cpu_percent,
         cpu_total = ctime.user + ctime.system,
-        free_Percnt=(disk_usage.free/disk_usage.used)/100,
+        free_Percnt=((disk_usage.free/disk_usage.used)*100),
         bytes_sent = net_io_counters.bytes_sent,
         bytes_received = net_io_counters.bytes_recv,
         packets_sent = net_io_counters.packets_sent,
@@ -38,5 +38,4 @@ if __name__=='__main__':
     while True:
         report = get_health()
         r = requests.post(STATS_URL, json=report)
-
         time.sleep(20)

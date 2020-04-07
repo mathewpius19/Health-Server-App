@@ -3,7 +3,7 @@ from flask import Flask
 from flask import request
 import json
 import time
-
+import csv
 app=Flask(__name__)
 @app.route("/Health",methods=['POST'])
 def health():
@@ -84,9 +84,35 @@ def report():
     conn=sqlite3.connect("Health.db")
     conn.execute(f"create table if not exists {server_name} (HEALTH_ID integer primary key AUTOINCREMENT,Time_Epoch integer,Disk_Free varchar(80),Bytes_Sent varchar(80),Bytes_Received varchar(80),Packets_Sent varchar(80),Packets_Received varchar(80),Memory_Free varchar(80),Cpu_Usage_Percent varchar(80),Cpu_Time varchar(80));")
     conn.execute(f'insert into {server_name} (Time_Epoch,Disk_Free,Bytes_Sent,Bytes_Received,Packets_Sent,Packets_Received,Memory_Free,Cpu_Usage_Percent,Cpu_Time) values {time_epoch,disk_free,bytes_sent,bytes_received,packets_sent,packets_received,memory_free,cpu_percent,cpu_total}')
-    conn.commit()
-    return {'message': 'success'}
+    cur=conn.cursor()
+    details=input("Do you want all,last 10 or first 10?")
+    try:
+        if details=="NULL" or  not details or details.isspace() or details !='all' or details!='last 10' or details!= 'first 10':
+            raise Exception
+    except Exception:
+        print("Invalid input")
+    else:
+        if details=='all':
+            cur.execute(f" select * from {server_name} order by HEALTH_ID")
+        elif details=='last 10':
+            cur.execute(f" select * from {server_name} order by HEALTH_ID desc limit 10")
+        else:
+            cur.execute(f" select * from {server_name} order by HEALTH_ID asc limit 10")
 
+        health_list=[]    
+        for row in cur:
+            tuple1=row
+            tuple2=('Health_id','Epoch_Time','Disk_Free','Bytes_Sent','Bytes_Received','Memory_Free','CPU_Usage_Percent','CPU_Time')
+            health_dict=dict(zip(tuple2,tuple1))
+            health_list.append(health_dict)
+        keys_list=['Health_id','Epoch_Time','Disk_Free','Bytes_Sent','Bytes_Received','Memory_Free','CPU_Usage_Percent','CPU_Time']
+        with open("Health.csv",'w+') as health:
+            writer=csv.DictWriter(health,fieldnames=keys_list)
+            writer.writeheader()
+            writer.writerows(health_list)
+    finally:
+        conn.commit()
+        return {'message': 'success'}
 
 if __name__ ==("__main__"):
     app.run(debug=True,port=8080)

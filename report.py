@@ -1,6 +1,6 @@
 import psutil
 
-STATS_URL = ' http://127.0.0.1:8080/report'
+STATS_URL = ' http://3.134.78.37:80/report'
 SERVER_NAME="test_local_server"
 
 def get_health(): 
@@ -31,8 +31,6 @@ def get_health():
     return report
 
 if __name__=='__main__':
-    import time
-    import requests
 
     print(f'starting health report stream for server :\t{SERVER_NAME}')
 

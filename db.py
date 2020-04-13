@@ -66,9 +66,8 @@ def server():
 
 
 
-@app.route("/report",methods=['GET','POST'])
+@app.route("/report",methods=['POST'])
 def report():
-    if request.method=='POST':
         time_epoch=time.time()
         incoming_report = request.get_json()
         print("Generating Health report")
@@ -91,4 +90,4 @@ def report():
 
 
 if __name__ ==("__main__"):
-    app.run(debug=True,port=8080)
+    app.run(host='0.0.0.0',port=80)

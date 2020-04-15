@@ -1,4 +1,6 @@
 import psutil
+import requests
+import time
 
 STATS_URL = ' http://3.134.78.37:80/report'
 SERVER_NAME="test_local_server"

@@ -67,6 +67,8 @@ def server():
         os.system(f"ssh ubuntu@{ip_address} -i key.pem")
         os.system('git clone https://github.com/mathewpius19/Health-Server-App.git ')
         os.system("cd Health-Server-App")
+        os.system('chmod 777 requirements.sh')
+        os.system('./requirements.sh')
         os.system("chmod 777 report.py")
         os.system("python3 report.py")
     finally:

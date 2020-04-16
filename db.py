@@ -38,7 +38,7 @@ def login():
         except Exception:
                     print("Username does not exist,Please create User and Continue")
         else:   
-            conn.execute(f"create table if not exists {username}_servers (IP_ID integer primary key AUTOINCREMENT,IP_Address varchar(20),Private_Key text blob,Server_Name varchar(80));")
+            conn.execute(f"create table if not exists {username}_servers (IP_ID integer primary key AUTOINCREMENT,IP_Address varchar(20),Private_Key varchar(500),Server_Name varchar(80));")
         finally:
             conn.commit()
             return "yes"
@@ -60,10 +60,22 @@ def server():
     else:
         conn.execute(f'insert into {username}_servers (IP_Address,Private_Key,Server_Name) values {ip_address,priv_key,server_name}')
         cur=conn.cursor()
-        cur.execute(f"select Private_key from {username}_servers where IP_Address={ip_address}")
+        cur.execute(f"select Private_Key from mathew_servers where IP_Address='52.14.13.8'")
         for row in cur:
             with open("key.pem","w+") as key:
                 key.write(row[0])
+            firstline="-----BEGIN RSA PRIVATE KEY-----\n"
+            lastline="-----END RSA PRIVATE KEY-----"
+            with open("key.pem","r") as key:
+                oline=key.readlines()
+                oline.insert(0,firstline)
+        
+            with open("key.pem","w") as key:
+                key.writelines(oline)
+            with open("key.pem","a") as key:
+                key.write("\n"+lastline)
+    
+    
         os.system(f"ssh ubuntu@{ip_address} -i key.pem")
         os.system('git clone https://github.com/mathewpius19/Health-Server-App.git ')
         os.system("cd Health-Server-App")

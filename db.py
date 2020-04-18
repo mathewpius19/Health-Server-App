@@ -49,40 +49,16 @@ def server():
     object=request.json
     username=object["Username"]
     ip_address=object["IP Address"]
-    priv_key=object["Private Key"]
     server_name=object["Server Name"]
     conn=sqlite3.connect("Health.db")
     try:
-        if priv_key=="NULL" or  not priv_key or priv_key.isspace():
+        if server_name=="NULL" or  not server_name or server_name.isspace():
             raise Exception
     except Exception:
             print("Private Key cannot be NULL")
     else:
-        conn.execute(f'insert into {username}_servers (IP_Address,Private_Key,Server_Name) values {ip_address,priv_key,server_name}')
-        cur=conn.cursor()
-        cur.execute(f"select Private_Key from mathew_servers where IP_Address='52.14.13.8'")
-        for row in cur:
-            with open("key.pem","w+") as key:
-                key.write(row[0])
-            firstline="-----BEGIN RSA PRIVATE KEY-----\n"
-            lastline="-----END RSA PRIVATE KEY-----"
-            with open("key.pem","r") as key:
-                oline=key.readlines()
-                oline.insert(0,firstline)
-        
-            with open("key.pem","w") as key:
-                key.writelines(oline)
-            with open("key.pem","a") as key:
-                key.write("\n"+lastline)
-    
-    
-        os.system(f"ssh ubuntu@{ip_address} -i key.pem")
-        os.system('git clone https://github.com/mathewpius19/Health-Server-App.git ')
-        os.system("cd Health-Server-App")
-        os.system('chmod 777 requirements.sh')
-        os.system('./requirements.sh')
-        os.system("chmod 777 report.py")
-        os.system("python3 report.py")
+        conn.execute(f'insert into {username}_servers (IP_Address,Server_Name) values {ip_address,server_name}')
+       
     finally:
         conn.commit()
         return "yes"
@@ -132,15 +108,24 @@ def report():
                     cur.execute(f" select * from {servername} order by HEALTH_ID asc limit 5")
 
     
+                health_dict={'Health_id':[],'Epoch_Time':[],'Disk_Free':[],'Bytes_Sent':[],'Bytes_Received':[],'Packets_Sent':[],'Packets_Received':[],'Memory_Free':[],'CPU_Usage_Percent':[],'CPU_Time':[]}
                 for row in cur:
-                    tuple1=row
-                    tuple2=('Health_id','Epoch_Time','Disk_Free','Bytes_Sent','Bytes_Received','Packets_Sent','Packets_Received','Memory_Free','CPU_Usage_Percent','CPU_Time')
-                    health_dict=dict(zip(tuple2,tuple1))
+                    health_dict['Health_id'].append(row[0])
+                    health_dict['Epoch_Time'].append(row[1])
+                    health_dict['Disk_Free'].append(row[2])
+                    health_dict['Bytes_Sent'].append(row[3])
+                    health_dict['Bytes_Received'].append(row[4])
+                    health_dict['Packets_Sent'].append(row[5])
+                    health_dict['Packets_Received'].append(row[6])
+                    health_dict['Memory_Free'].append(row[7])
+                    health_dict['CPU_Usage_Percent'].append(row[8])
+                    health_dict['CPU_Time'].append(row[9])
+                return (health_dict)
+           
                     
             finally:    
                 conn.commit()
-                return {health_dict}
 
 
 if __name__ ==("__main__"):
-    app.run(host='0.0.0.0',port=80)
+    app.run(host='0.0.0.0',debug=True,port=80)

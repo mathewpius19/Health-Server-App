@@ -3,7 +3,6 @@ from flask import Flask
 from flask import request
 import json
 import time
-import os
 app=Flask(__name__)
 @app.route("/Registration",methods=['POST'])
 def health():
@@ -78,29 +77,27 @@ def remove_server():
 
 
 
-@app.route("/report",methods=['GET','POST'])
+@app.route("/report",methods=['POST'])
 def report():
+    time_epoch=time.time()
+    incoming_report = request.get_json()
+    print("Generating Health report")
+    username=incoming_report["USER_NAME"]
+    server_name=incoming_report["SERVER_NAME"]
+    disk_free=incoming_report["free_Percnt"]
+    bytes_sent=incoming_report["bytes_sent"]
+    bytes_received=incoming_report["bytes_received"]
+    packets_sent=incoming_report["packets_sent"]
+    packets_received=incoming_report["packets_received"]
+    memory_free=incoming_report["memory_Free"]
+    cpu_percent=incoming_report["cpupercent"]
+    cpu_total=incoming_report["cpu_total"]
+    conn=sqlite3.connect("Health.db")
+    conn.execute(f"create table if not exists {username}_{server_name} (HEALTH_ID integer primary key AUTOINCREMENT,Time_Epoch integer,Disk_Free varchar(80),Bytes_Sent varchar(80),Bytes_Received varchar(80),Packets_Sent varchar(80),Packets_Received varchar(80),Memory_Free varchar(80),Cpu_Usage_Percent varchar(80),Cpu_Time varchar(80));")
+    conn.execute(f'insert into {username}_{server_name} (Time_Epoch,Disk_Free,Bytes_Sent,Bytes_Received,Packets_Sent,Packets_Received,Memory_Free,Cpu_Usage_Percent,Cpu_Time) values {time_epoch,disk_free,bytes_sent,bytes_received,packets_sent,packets_received,memory_free,cpu_percent,cpu_total}')
+    conn.commit()
+    return "yes"  
 
-        if request.method=='POST':
-            
-            time_epoch=time.time()
-            incoming_report = request.get_json()
-            print("Generating Health report")
-            username=incoming_report["USER_NAME"]
-            server_name=incoming_report["SERVER_NAME"]
-            disk_free=incoming_report["free_Percnt"]
-            bytes_sent=incoming_report["bytes_sent"]
-            bytes_received=incoming_report["bytes_received"]
-            packets_sent=incoming_report["packets_sent"]
-            packets_received=incoming_report["packets_received"]
-            memory_free=incoming_report["memory_Free"]
-            cpu_percent=incoming_report["cpupercent"]
-            cpu_total=incoming_report["cpu_total"]
-            conn=sqlite3.connect("Health.db")
-            conn.execute(f"create table if not exists {username}_{server_name} (HEALTH_ID integer primary key AUTOINCREMENT,Time_Epoch integer,Disk_Free varchar(80),Bytes_Sent varchar(80),Bytes_Received varchar(80),Packets_Sent varchar(80),Packets_Received varchar(80),Memory_Free varchar(80),Cpu_Usage_Percent varchar(80),Cpu_Time varchar(80));")
-            conn.execute(f'insert into {username}_{server_name} (Time_Epoch,Disk_Free,Bytes_Sent,Bytes_Received,Packets_Sent,Packets_Received,Memory_Free,Cpu_Usage_Percent,Cpu_Time) values {time_epoch,disk_free,bytes_sent,bytes_received,packets_sent,packets_received,memory_free,cpu_percent,cpu_total}')
-            conn.commit()
-            return "yes"    
 @app.route("/Display/<servername>/<details>",methods=['GET'])
 def display(servername,details):
     conn=sqlite3.connect("Health.db")    

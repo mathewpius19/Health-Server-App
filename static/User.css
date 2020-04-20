@@ -1,0 +1,15 @@
+*{
+    box-sizing: border-box;
+}
+.navbar{
+    background-color:rgb(10, 60, 223);
+    font-family: sans-serif;
+    height:15%;
+    /*border:1px solid black;*/
+}
+
+.user{
+    display:flex;
+    justify-content: stretch;
+    font-family: sans-serif;
+}

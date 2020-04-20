@@ -3,7 +3,7 @@ import requests
 import time
 import sys
 
-STATS_URL = ' http://localhost:80/report'
+STATS_URL = ' http://3.134.78.37:80/report'
 
 try:
     if len(sys.argv)<1:
@@ -50,4 +50,4 @@ if __name__=='__main__':
     while True:
         report = get_health()
         r = requests.post(STATS_URL, json=report)
-        time.sleep(20)
+        time.sleep(10)

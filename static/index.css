@@ -1,0 +1,35 @@
+*{
+    box-sizing: border-box;
+}
+.navbar{
+    background-color:rgb(10, 60, 223);
+    font-family: sans-serif;
+    height:15%;
+    /*border:1px solid black;*/
+}
+body{
+    background-color: white;
+}
+.font{
+    font-family: sans-serif'
+}
+.main-content{
+    height: 550px;
+    display: flex;
+    flex-direction: row;
+    
+    /*border: 1px solid black;*/
+}
+.description{
+    margin-top: 5%;
+    width:50%;
+    display:block;
+    margin:auto;
+
+}
+.img-size{
+    width: 300px;
+    height:300px;
+    display: block;
+    margin:auto;
+}

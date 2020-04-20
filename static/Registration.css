@@ -1,0 +1,23 @@
+*{
+    box-sizing: border-box;
+}
+.navbar{
+    background-color:rgb(10, 60, 223);
+    font-family: sans-serif;
+    height:15%;
+    /*border:1px solid black;*/
+}
+.main-body
+    {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+      }
+
+      .signin {
+        background-color: white;
+        text-align: center;
+      }

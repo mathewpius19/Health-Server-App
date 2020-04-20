@@ -1,11 +1,16 @@
 import sqlite3
-from flask import Flask
+from flask import Flask,render_template
 from flask import request
 import json
 import time
 app=Flask(__name__)
+
+@app.route("/index",methods=['GET'])
+def index():
+    return render_template("index.html")
+
 @app.route("/Registration",methods=['POST'])
-def health():
+def Regist_post():
     object=request.json
     username=object["Username"]
     password=object["Password"]
@@ -23,8 +28,14 @@ def health():
         conn.commit()
         return "yes"
 
+@app.route("/Registration",methods=['GET'])
+def Regist_get():
+    return render_template("Registration.html")
+
+
+
 @app.route("/login",methods=['POST']) 
-def login():
+def login_post():
     object=request.json
     username=object["Username"]
     conn=sqlite3.connect("Health.db")
@@ -42,10 +53,13 @@ def login():
         finally:
             conn.commit()
             return "yes"
+@app.route("/login",methods=['GET'])
+def login_get():
+    return render_template("Login.html")
 
 
 @app.route("/Add_Server",methods=['POST'])
-def add_server():
+def add_server_post():
     object=request.json
     username=object["Username"]
     ip_address=object["IP Address"]
@@ -72,10 +86,9 @@ def remove_server():
     conn.execute(f'delete from {username}_servers where server_name=(?)',(servername,))
     conn.commit()
     return 'yes'
-
-
-
-
+@app.route("/Add_Server",methods=['GET'])
+def add_server_get():
+    return render_template("Server.html")
 
 @app.route("/report",methods=['POST'])
 def report():

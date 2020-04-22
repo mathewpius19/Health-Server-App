@@ -15,19 +15,34 @@ def Regist_post():
     username=object["Username"]
     password=object["Password"]
     conn=sqlite3.connect("Health.db")
+    conn.execute("create table if not exists 'user'(UID integer primary key AUTOINCREMENT,username varchar(20),password varchar(20));")
+    response_message={"message":"Registration Successful"}
     try:
-        if password=="NULL" or not password or password.isspace():
+        if len(username)<3:
             raise Exception
     except Exception:
-        print("Password cannot be NULL")
+        response_message['message']="invalid username"
+    try:
+        cur=conn.cursor()
+        cur.execute("select exists(select username from user where username=(?))",(username,))
+        for row in cur:
+            rowlist=list(row)
+            if password=="NULL" or not password or password.isspace() or rowlist[0]==1:
+                raise Exception 
+    except Exception:
+        response_message['message']="Password cannot be NULL or user already exists" 
     else:       
-       
-        conn.execute("create table if not exists 'user'(UID integer primary key AUTOINCREMENT,username varchar(20),password varchar(20));")
-        conn.execute("insert into user(username,password) values(?,?)",(username,password))
+       try:
+            conn.execute("insert into user(username,password) values(?,?)",(username,password))
+       except:    
+        response_message['message']="Registration Failed"
     finally:
-        conn.commit()
-        return "yes"
-
+        try:
+            conn.commit()
+        except:
+            response_message['message']="Registration Failed"
+    response_message=json.dumps(response_message)
+    return response_message
 @app.route("/Registration",methods=['GET'])
 def Regist_get():
     return render_template("Registration.html")
@@ -38,21 +53,37 @@ def Regist_get():
 def login_post():
     object=request.json
     username=object["Username"]
+    password=object["Password"]
     conn=sqlite3.connect("Health.db")
+    conn.execute("create table if not exists 'user'(UID integer primary key AUTOINCREMENT,username varchar(20),password varchar(20));")
     cur=conn.cursor()
     cur.execute("select exists(select username from user where username=(?))",(username,))
+    response_message={"message":"Login Successful"}
     for row in cur:
         rowlist=list(row)
         try:
             if rowlist[0]==0:
                 raise Exception
         except Exception:
-                    print("Username does not exist,Please create User and Continue")
-        else:   
-            conn.execute(f"create table if not exists {username}_servers (IP_ID integer primary key AUTOINCREMENT,IP_Address varchar(20),Server_Name varchar(80));")
+            response_message['message']="Username does not exist,Please create User and Continue"
+        else:
+            cur.execute("select password from user where username=(?)",(username,))
+            for row in cur:
+                rowlist=list(row)
+            try:
+                if not(rowlist[0]==password) or password=="NULL" or not password or password.isspace():
+                    raise Exception
+            except Exception:
+                response_message['message']="Password is wrong or NULL"
+            else:   
+                conn.execute(f"create table if not exists {username}_servers (IP_ID integer primary key AUTOINCREMENT,IP_Address varchar(20),Server_Name varchar(80));")
+                response_message['message']="Login Successful"
+                
         finally:
             conn.commit()
-            return "yes"
+        response_message=json.dumps(response_message)
+        return response_message
+            
 @app.route("/login",methods=['GET'])
 def login_get():
     return render_template("Login.html")
@@ -82,10 +113,21 @@ def remove_server():
     username=object["Username"]
     servername=object["Server Name"]
     conn=sqlite3.connect("Health.db")
+
     conn.execute(f'drop table {username}_{servername}')
     conn.execute(f'delete from {username}_servers where server_name=(?)',(servername,))
     conn.commit()
-    return 'yes'
+    return 'Deletion Successful'
+@app.route("/Delete_User",methods=['POST'])
+def del_user():
+    object=request.json
+    username=object['Username']
+    servername=object['Server Name']
+    conn=sqlite3.connect("Health.db")
+    conn.execute(f'drop table {username}_{servername}')
+    conn.execute(f'drop table {username}_servers')
+    conn.execute()
+    return "Deletion Successful"
 @app.route("/Add_Server",methods=['GET'])
 def add_server_get():
     return render_template("Server.html")

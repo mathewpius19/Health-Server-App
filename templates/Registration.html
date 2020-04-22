@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Compiled and minified CSS -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oleo+Script&family=Oxygen&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{url_for('static',filename='Registration.css')}} "
+    />
+    <title>Registration</title>
+  </head>
+
+  <body>
+    <nav>
+      <div class="nav-wrapper navbar z-index-3">
+        <a href="#" class="brand-logo">Shepherd</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li>Register</li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container">
+      <h1>Register</h1>
+      <p class="message-box">Please fill in this form to create an account.</p>
+
+      <div class="row main-body">
+        <label for="uname"><b>Username</b></label>
+        <input
+          class="username-box"
+          type="text"
+          placeholder="Enter Username"
+          name="uname"
+          required
+        />
+
+        <label for="psw"><b>Password</b></label>
+        <input
+          class="password-box"
+          type="password"
+          placeholder="Enter Password"
+          name="psw"
+          required
+        />
+        <label for="psw-repeat"><b>Repeat Password</b></label>
+        <input
+          class="repeat"
+          type="password"
+          placeholder="Repeat Password"
+          name="psw-repeat"
+          required
+        />
+      </div>
+      <button
+        class="submit-button btn waves-effect waves-light"
+        type="submit"
+        name="action">
+        Register
+      </button>
+    </div>
+    <div class="container signin">
+      <p>Already have an account? <a href="#">Sign in</a>.</p>
+    </div>
+    <script>
+      const submitButton = document.querySelector(".submit-button");
+      submitButton.addEventListener("click", function () {
+        const username = document.querySelector(".username-box").value;
+        const password = document.querySelector(".password-box").value;
+        const repeated = document.querySelector(".repeat").value;
+        const messageBox = document.querySelector(".message-box");
+        if (password !== repeated) {
+          messageBox.innerText = "Passwords do not match";
+          messageBox.style.backgroundColor = "red"
+          messageBox.style.color="white"
+        } else {
+          newUser = {
+            Username: username,
+            Password: password,
+          };
+
+          const rawResponse = fetch("/Registration", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newUser),
+          });
+          rawResponse
+            .then((something) => {
+              return something.json();
+            })
+            .then((processedObject) => {
+              messageBox.innerText = processedObject.message;
+              if (processedObject.message === "Registration Successful") {
+                messageBox.style.backgroundColor = "green";
+                messageBox.stylecolor= "lightgreen"
+              }
+              else{
+                  messageBox.style.backgroundColor = "red"
+                  messageBox.style.color="white"
+              }
+            });
+        }
+      });
+    </script>
+  </body>
+</html>

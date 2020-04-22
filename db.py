@@ -187,7 +187,6 @@ def display(servername,details):
     finally:
         conn.commit()
 
-        
 
 
 if __name__ ==("__main__"):

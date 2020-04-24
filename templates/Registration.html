@@ -25,7 +25,7 @@
   <body>
     <nav>
       <div class="nav-wrapper navbar z-index-3">
-        <a href="#" class="brand-logo">Shepherd</a>
+        <a href="/index" class="hoverable brand-logo">Shepherd</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
           <li>Register</li>
         </ul>
@@ -40,7 +40,7 @@
         <input
           class="username-box"
           type="text"
-          placeholder="Enter Username"
+          placeholder="Username cannot contain any special character other than underscore"
           name="uname"
           required
         />
@@ -70,7 +70,7 @@
       </button>
     </div>
     <div class="container signin">
-      <p>Already have an account? <a href="#">Sign in</a>.</p>
+      <p>Already have an account? <a href="/login">Sign in</a>.</p>
     </div>
     <script>
       const submitButton = document.querySelector(".submit-button");

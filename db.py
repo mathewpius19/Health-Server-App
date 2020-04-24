@@ -20,22 +20,26 @@ def Regist_post():
     try:
         if len(username)<3:
             raise Exception
+        for i in username:
+            if not(ord(i)>=65 and ord(i)<=90 or ord(i)>=97 and ord(i)<=122 or ord(i)>=48 and ord(i)<=57 or i=="_"):
+                raise Exception
     except Exception:
         response_message['message']="invalid username"
-    try:
-        cur=conn.cursor()
-        cur.execute("select exists(select username from user where username=(?))",(username,))
-        for row in cur:
-            rowlist=list(row)
-            if password=="NULL" or not password or password.isspace() or rowlist[0]==1:
-                raise Exception 
-    except Exception:
-        response_message['message']="Password cannot be NULL or user already exists" 
-    else:       
-       try:
-            conn.execute("insert into user(username,password) values(?,?)",(username,password))
-       except:    
-        response_message['message']="Registration Failed"
+    else:
+        try:
+            cur=conn.cursor()
+            cur.execute("select exists(select username from user where username=(?))",(username,))
+            for row in cur:
+                rowlist=list(row)
+                if password=="NULL" or not password or password.isspace() or rowlist[0]==1:
+                    raise Exception 
+        except Exception:
+            response_message['message']="Password cannot be NULL or user already exists" 
+        else:       
+            try:
+                conn.execute("insert into user(username,password) values(?,?)",(username,password))
+            except:    
+                response_message['message']="Registration Failed"
     finally:
         try:
             conn.commit()
@@ -92,32 +96,94 @@ def login_get():
 @app.route("/Add_Server",methods=['POST'])
 def add_server_post():
     object=request.json
-    username=object["Username"]
-    ip_address=object["IP Address"]
-    server_name=object["Server Name"]
+    ip_address=object["IPAddress"]
+    server_name=object["Servername"]
     conn=sqlite3.connect("Health.db")
+    response_message={"message":"Server Registration Successful"}
+    
     try:
-        if server_name=="NULL" or  not server_name or server_name.isspace():
-            raise Exception
+        cur=conn.cursor()
+        username=object["Username"]
+        cur.execute(f"select exists(select Server_Name from {username}_servers where Server_Name=(?))",(server_name,))
+        for row in cur:
+            rowlist=list(row)
+            if server_name=="NULL" or  not server_name or server_name.isspace() or rowlist[0]==1:
+                raise Exception
     except Exception:
-            print("Server Name cannot be NULL")
+        response_message['message']="Server name is NULL or already exists"
+            
     else:
-        conn.execute(f'insert into {username}_servers (IP_Address,Server_Name) values {ip_address,server_name}')
-       
+        try:
+            if ip_address=='NULL' or not ip_address or ip_address.isspace():
+                raise Exception
+        except Exception:
+            response_message['message']="IP Address cannot be NULL or empty"
+        else:
+            conn.execute(f'insert into {username}_servers (IP_Address,Server_Name) values {ip_address,server_name}')
+            response_message['message']="Server Registration Successful"
     finally:
         conn.commit()
-        return "yes"
+    response_message=json.dumps(response_message)
+    return response_message
+        
 @app.route("/Remove_Server",methods=['POST'])
 def remove_server():
     object=request.json
     username=object["Username"]
-    servername=object["Server Name"]
+    servername=object["Servername"]
+    response_message={"message":"Server Registration Successful"}
     conn=sqlite3.connect("Health.db")
+    cur=conn.cursor()
+    try:
+        cur.execute(f"select exists(select Server_Name from {username}_servers where Server_Name=(?))",(servername,))
+        for row in cur:
+            rowlist=list(row)
+            if servername=="NULL" or  not servername or servername.isspace() or rowlist[0]==0:
+                raise Exception
+    except Exception:
+        response_message['message']="Server name is NULL or doesnt exist"
+    else:
+        conn.execute(f'drop table {username}_{servername}')
+        conn.execute(f'delete from {username}_servers where server_name=(?)',(servername,))
+        response_message['message']="Server Deletion Successful"
+    finally:    
+        conn.commit()
+    responseMessage=json.dumps(response_message)
+    return responseMessage
+@app.route("/Remove_Server",methods=['GET'])
+def remove_server_get():
+    return render_template("RemoveServer.html")
 
-    conn.execute(f'drop table {username}_{servername}')
-    conn.execute(f'delete from {username}_servers where server_name=(?)',(servername,))
-    conn.commit()
-    return 'Deletion Successful'
+@app.route("/User",methods=['GET'])
+def user_get():
+    return render_template("User.html")
+@app.route("/User",methods=['POST'])
+def user():
+    object=request.json
+    username=object['Username']
+    conn=sqlite3.connect("Health.db")
+    cur=conn.cursor()
+    response_message={"message":"Adding Server...."}
+    try:
+        cur.execute(f"select * from {username}_servers order by IP_ID")
+        user_dict={"ID":[],"IP_Address":[],"Server_Name":[]}
+        for row in cur:
+            user_dict['ID'].append(row[0])
+            user_dict['IP_Address'].append(row[1])
+            user_dict['Server_Name'].append(row[2])
+            if len(user_dict['id'])>5:
+                raise Exception
+    except Exception:
+        response_message['message']="No of Servers are full.Delete a Server to continue!"
+    else:
+        user=json.dumps(user_dict)
+        
+    finally:
+        conn.commit()
+        return user
+
+    
+
 @app.route("/Delete_User",methods=['POST'])
 def del_user():
     object=request.json

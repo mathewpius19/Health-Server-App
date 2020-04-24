@@ -24,9 +24,9 @@
             </div>
         </nav>
         <div class="container">
-            <h1>Server Registration</h1>
+            <h1>Server Deletion</h1>
                 <p class="message-box">
-                    Please fill this form to register your server.
+                    Please fill this form to remove your server.
                 </p>
                     <div class="imgcontainer">
                       <img src="https://vectorified.com/images/server-farm-icon-23.jpg" alt="Server" class="server">
@@ -38,22 +38,17 @@
                 placeholder="Enter Server Name" 
                 name="server" required>
                 
-                <label for="ipadd"><b>IP Address</b></label>
-                <input class="ipaddress-box" 
-                type="text" 
-                placeholder="Enter IP Address" 
-                name="ipadd" required>
         </div>
-                <button class="submit-button btn waves-effect waves-light" 
+                <button class="removeServer-button btn waves-effect waves-light" 
                 type="submit" 
-                name="action">Register Server
+                name="action">Remove Server
                 </button>
         </div>
+        </body>
         <script>
-            const submitButton=document.querySelector(".submit-button");
-            submitButton.addEventListener("click", function(){
+            const removeServerButton=document.querySelector(".removeServer-button");
+            removeServerButton.addEventListener("click", function(){
                 const servername= document.querySelector(".server-box").value;
-                const ipaddress= document.querySelector(".ipaddress-box").value;
                 const messageBox= document.querySelector(".message-box");
                 if (document.cookie.includes(";")) {
                         c_index = document.cookie.split(";").length - 1;
@@ -66,10 +61,9 @@
                 Server={
                     Username:logged_in.Username,
                     Servername: servername,
-                    IPAddress: ipaddress,
                 };
 
-                const rawResponse = fetch("/Add_Server",{
+                const rawResponse = fetch("/Remove_Server",{
                     method: "POST",
                     headers:{
                         "Content-Type":"application/json",
@@ -83,7 +77,7 @@
                  })
                  .then((processedObject) => {
                      messageBox.innerText = processedObject.message;
-                     if (processedObject.message==="Server Registration Successful") {
+                     if (processedObject.message==="Server Deletion Successful") {
                          messageBox.style.backgroundColor="green";
                          messageBox.stylecolor="lightgreen";
                         window.location.replace("/User")
@@ -95,6 +89,5 @@
 
                  })
             })
-        </script>    
-</body>
-</html>
+        </script>
+        </html>

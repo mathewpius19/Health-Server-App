@@ -20,17 +20,92 @@
         <div class='nav-wrapper navbar z-index-3'>
             <a href='#' class='brand-logo'>Shepherd</a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                
             </ul>
             </div>
         </nav>
     <div class="container">
-        <h2 class=user>Username</h2>
+        <h2 class='user username-Header'>Username</h2>
         <hr>
+        <table class="table-border">
+            <theader>
+            <tr>
+                
+              <th>ID</th>
+              <th>IP Address</th>
+              <th>Servername</th>
+            </tr>
+        </theader>
+           
+          </table>
     <div>
-    <button class="btn waves-effect waves-light" type="submit" name="action">Add Server</button>
+    <button class="Add_Server-button btn waves-effect waves-light" 
+    type="submit" 
+    name="action">Add Server
+    </button>
     </div> 
+    <div>
+    <button class="Remove_Server-button btn waves-effect waves-light" 
+    type="submit" 
+    name="action">Remove Server
+    </div>
     </div>
     
 </body>
+<script>
+    
+    const username=document.querySelector(".username-Header");
+    if (document.cookie.includes(";")) {
+                        c_index = document.cookie.split(";").length - 1;
+                        logged_in = JSON.parse(document.cookie.split(";")[c_index]);
+                        
+                        } 
+                        else {
+                                logged_in = JSON.parse(document.cookie);
+                            }        
+    username.innerText=logged_in.Username;
+    User={
+        Username:logged_in.Username,
+    };
+    const rawResponse = fetch("/User",{
+                    method: "POST",
+                    headers:{
+                        "Content-Type":"application/json",
+                    },
+                    body: JSON.stringify(User),
+                });
+        
+    rawResponse
+     .then((something) => {
+         return something.json();
+     })
+     .then((processedObject) =>{
+         userobject=processedObject;
+        const [table] = document.getElementsByTagName('table');
+        userobject.ID.forEach((id,i) => {
+            const tr=table.insertRow();
+            tr.insertCell().textContent = id;
+            tr.insertCell().textContent = userobject.IP_Address[i];
+            tr.insertCell().textContent = userobject.Server_Name[i];
+            table.append(tr); 
+            
+        });
+     })
+    
+    
+    const addServerButton = document.querySelector(".Add_Server-button");
+    addServerButton.addEventListener("click",function(){
+        window.location.href="/Add_Server"
+    })
+    const removeServerButton = document.querySelector(".Remove_Server-button");
+    removeServerButton.addEventListener("click",function(){
+        window.location.href="/Remove_Server"
+    })
+        
+      
+        
+    
+   
+    
+
+</script>
 </html>

@@ -13,9 +13,4 @@
     justify-content: stretch;
     font-family: sans-serif;
 }
-.table-border{
-    border-collapse: collapse;
-}
-td,th{
-    border:1px solid black;
-}
+

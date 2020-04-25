@@ -18,7 +18,7 @@
 <body>
     <nav>   
         <div class='nav-wrapper navbar z-index-3'>
-            <a href='#' class='brand-logo'>Shepherd</a>
+            <a href='/index' class='brand-logo'>Shepherd</a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
             </ul>
             </div>
@@ -26,11 +26,11 @@
     <div class="container">
         <h2 class='user username-Header'>Username</h2>
         <hr>
-        <table class="table-border">
+        <table>
             <theader>
             <tr>
                 
-              <th>ID</th>
+              
               <th>IP Address</th>
               <th>Servername</th>
             </tr>
@@ -48,6 +48,12 @@
     type="submit" 
     name="action">Remove Server
     </div>
+    <div>
+        <button class="show-report btn waves-effect waves-light" 
+        type="submit" 
+        name="action">Report
+        </button>
+        </div> 
     </div>
     
 </body>
@@ -83,7 +89,7 @@
         const [table] = document.getElementsByTagName('table');
         userobject.ID.forEach((id,i) => {
             const tr=table.insertRow();
-            tr.insertCell().textContent = id;
+            //tr.insertCell().textContent = id;
             tr.insertCell().textContent = userobject.IP_Address[i];
             tr.insertCell().textContent = userobject.Server_Name[i];
             table.append(tr); 
@@ -99,6 +105,11 @@
     const removeServerButton = document.querySelector(".Remove_Server-button");
     removeServerButton.addEventListener("click",function(){
         window.location.href="/Remove_Server"
+    })
+
+    const showReportButton = document.querySelector(".show-report");
+    showReportButton.addEventListener("click", function(){
+        window.location.href="/Display"
     })
         
       

@@ -60,7 +60,7 @@ def login_post():
     username=object["Username"]
     password=object["Password"]
     conn=sqlite3.connect("Health.db")
-    conn.execute("create table if not exists 'user'(UID integer primary key AUTOINCREMENT,username varchar(20),password varchar(20));")
+    conn.execute("create table if not exists 'user'(UID integer primary key AUTOINCREMENT,username varchar(20),password varchar(20),security varchar(20));")
     cur=conn.cursor()
     cur.execute("select exists(select username from user where username=(?))",(username,))
     response_message={"message":"Login Successful"}
@@ -282,7 +282,6 @@ def security():
     object=request.json
     security=object["Security"]
     conn=sqlite3.connect("Health.db")
-    print(security)
     response_message={'message':"Answer is correct"}
     cur=conn.cursor()
     try:

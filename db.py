@@ -14,17 +14,18 @@ def Regist_post():
     object=request.json
     username=object["Username"]
     password=object["Password"]
+    security=object["Security"]
     conn=sqlite3.connect("Health.db")
-    conn.execute("create table if not exists 'user'(UID integer primary key AUTOINCREMENT,username varchar(20),password varchar(20));")
+    conn.execute("create table if not exists 'user'(UID integer primary key AUTOINCREMENT,username varchar(20),password varchar(20),security varchar(20));")
     response_message={"message":"Registration Successful"}
     try:
-        if len(username)<3:
+        if len(username)<3 or len(security)<3:
             raise Exception
         for i in username:
             if not(ord(i)>=65 and ord(i)<=90 or ord(i)>=97 and ord(i)<=122 or ord(i)>=48 and ord(i)<=57 or i=="_"):
                 raise Exception
     except Exception:
-        response_message['message']="invalid username"
+        response_message['message']="invalid username or security detail"
     else:
         try:
             cur=conn.cursor()
@@ -37,7 +38,7 @@ def Regist_post():
             response_message['message']="Password cannot be NULL or user already exists" 
         else:       
             try:
-                conn.execute("insert into user(username,password) values(?,?)",(username,password))
+                conn.execute("insert into user(username,password,security) values(?,?,?)",(username,password,security))
             except:    
                 response_message['message']="Registration Failed"
     finally:
@@ -271,26 +272,42 @@ def display():
             conn.commit()
     health=json.dumps(health_dict)
     return health
-#@app.route("/gen_report",methods=['POST'])
-#def gen_report():
- #   object=request.json
-  #  username=object["Username"]
-   # servername=object["Servername"]
-    #details=object["Details"]
-    #conn=sqlite3.connect("Health.db")
-   
-    #health=json.dumps(health_dict)
-    #return health
-
 
 @app.route("/Display",methods=['GET'])
 def display_get():
     return render_template("Display.html")
 
-@app.route("/report",methods=['GET'])
-def report_get():
-    return render_template("report.html")
+@app.route("/security",methods=['POST'])
+def security():
+    object=request.json
+    security=object["Security"]
+    conn=sqlite3.connect("Health.db")
+    print(security)
+    response_message={'message':"Answer is correct"}
+    cur=conn.cursor()
+    try:
+        cur.execute("select exists(select security from 'user' where security=(?))",(security,))
+        for row in cur:
+            rowlist=list(row)
+            if rowlist[0]==0 or  security=="NULL" or not security or security.isspace():
+                raise Exception
+    except Exception:
+        response_message['message']="Answer is wrong"
+    else:
+        cur.execute("select password from user where security=(?)",(security,))
+        for row in cur:
+            rowlist=list(row)
+            response_message['message']="Answer is correct"
+            response_message['password']=rowlist[0]
+            
+    finally:
+        conn.commit()
+    response=json.dumps(response_message)
+    return response
 
+@app.route("/security",methods=['GET'])
+def security_get():
+    return render_template("security.html")
 
 
 

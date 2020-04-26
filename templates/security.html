@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Compiled and minified CSS -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oleo+Script&family=Oxygen&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{url_for('static',filename='security.css')}} "
+    />
+    <title>Security</title>
+  </head>
+
+<body>
+    <nav>
+        <div class="nav-wrapper navbar z-index-3">
+          <a href="/index" class="hoverable brand-logo">Shepherd</a>
+          <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li>security</li>
+          </ul>
+        </div>
+      </nav>
+      <div class="container">
+        <h1>Password Recovery</h1>
+        <p class="message-box">Please answer the security question and if correct, password appears here.</p>
+  
+        <div class="row main-body">
+          <label for="security"><b>Whats the last five digits of your phone number?</b></label>
+          <input
+            class="security-box"
+            type="text"
+            placeholder="e.g.12345 "
+            name="security"
+            required
+          />
+        </div>
+        <button
+          class="security-button btn waves-effect waves-light"
+          type="submit"
+          name="action">
+          submit answer
+        </button>
+          </div>
+        
+      </div>
+    
+</body>
+<script>
+    const securityButton = document.querySelector(".security-button");
+    securityButton.addEventListener("click", function () {
+    const security = document.querySelector(".security-box").value;
+    const messageBox = document.querySelector(".message-box");
+          answer = {
+            Security: security,
+          };
+
+          const rawResponse = fetch("/security", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(answer),
+          });
+          rawResponse
+            .then((something) => {
+              return something.json();
+            })
+            .then((processedObject) => {
+              messageBox.innerText = processedObject.message;
+              if (processedObject.message === "Answer is correct") {
+                messageBox.innerText = processedObject.password;
+                messageBox.style.backgroundColor = "green";
+                messageBox.stylecolor= "lightgreen"
+              }
+              else{
+                  messageBox.style.backgroundColor = "red"
+                  messageBox.style.color="white"
+              }
+            });
+        
+      });
+    
+</script>
+</html>

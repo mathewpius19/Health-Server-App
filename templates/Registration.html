@@ -61,6 +61,13 @@
           name="psw-repeat"
           required
         />
+        <label for="security"><b>Whats the last 5 digits of your phone number?</b></label>
+        <input
+          class="security-box"
+          type="text"
+          placeholder="security"
+          name="security"
+          required/>
       </div>
       <button
         class="submit-button btn waves-effect waves-light"
@@ -78,6 +85,7 @@
         const username = document.querySelector(".username-box").value;
         const password = document.querySelector(".password-box").value;
         const repeated = document.querySelector(".repeat").value;
+        const security = document.querySelector(".security-box").value;
         const messageBox = document.querySelector(".message-box");
         if (password !== repeated) {
           messageBox.innerText = "Passwords do not match";
@@ -87,6 +95,7 @@
           newUser = {
             Username: username,
             Password: password,
+            Security: security,
           };
 
           const rawResponse = fetch("/Registration", {

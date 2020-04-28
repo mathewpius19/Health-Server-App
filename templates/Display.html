@@ -72,6 +72,7 @@
         </div>
         </body>
         <script>
+            const csvButton = document.querySelector(".csv-button");
             const generateReportButton=document.querySelector(".report-button");
             generateReportButton.addEventListener("click", function(){
                 const servername= document.querySelector(".server-box").value;
@@ -108,7 +109,7 @@
                      
                      if (processedObject.message==="Generating Health Report") {
                          messageBox.style.backgroundColor="green";
-                         messageBox.stylecolor="lightgreen";
+                         messageBox.style.color="white";
                          userobject=processedObject;
                         const [table] = document.getElementsByTagName('table');
                         userobject.Health_id.forEach((Health_id,i) => {
@@ -123,9 +124,8 @@
                         tr.insertCell().textContent = userobject.Memory_Free[i];
                         tr.insertCell().textContent = userobject.CPU_Usage_Percent[i];
                         tr.insertCell().textContent = userobject.CPU_Time[i];
-                        
-                        table.append(tr); 
-                    });
+                        table.append(tr);
+                        });
                         
                         }
                     else {

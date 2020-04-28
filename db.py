@@ -177,7 +177,7 @@ def user():
     
 @app.route("/Add_Server",methods=['GET'])
 def add_server_get():
-    return render_template("Server.html")
+    return render_template("AddServer.html")
 
 @app.route("/report",methods=['POST'])
 def report():
@@ -307,7 +307,6 @@ def security():
 @app.route("/security",methods=['GET'])
 def security_get():
     return render_template("security.html")
-
 
 
 if __name__ ==("__main__"):

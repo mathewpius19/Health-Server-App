@@ -36,6 +36,14 @@
         <p class="message-box">Please answer the security question and if correct, password appears here.</p>
   
         <div class="row main-body">
+          <label for="username"><b>username</b></label>
+          <input
+            class="username-box"
+            type="text"
+            placeholder="username you have registered"
+            name="username"
+            required
+          />
           <label for="security"><b>Whats the last five digits of your phone number?</b></label>
           <input
             class="security-box"
@@ -59,9 +67,11 @@
 <script>
     const securityButton = document.querySelector(".security-button");
     securityButton.addEventListener("click", function () {
+    const username = document.querySelector(".username-box").value;
     const security = document.querySelector(".security-box").value;
     const messageBox = document.querySelector(".message-box");
           answer = {
+            Username:username,
             Security: security,
           };
 

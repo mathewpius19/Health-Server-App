@@ -283,24 +283,34 @@ def display_get():
 @app.route("/security",methods=['POST'])
 def security():
     object=request.json
+    username=object["Username"]
     security=object["Security"]
     conn=sqlite3.connect("Health.db")
     response_message={'message':"Answer is correct"}
     cur=conn.cursor()
     try:
-        cur.execute("select exists(select security from 'user' where security=(?))",(security,))
+        cur.execute("select exists(select username from 'user' where username=(?))",(username,))
         for row in cur:
             rowlist=list(row)
-            if rowlist[0]==0 or  security=="NULL" or not security or security.isspace():
+            if rowlist[0]==0 or  username=="NULL" or not username or username.isspace():
                 raise Exception
     except Exception:
-        response_message['message']="Answer is wrong"
+        response_message['message']="Username does not exist"
     else:
-        cur.execute("select password from user where security=(?)",(security,))
-        for row in cur:
-            rowlist=list(row)
-            response_message['message']="Answer is correct"
-            response_message['password']=rowlist[0]
+        try:
+            cur.execute("select exists(select security from 'user' where security=(?))",(security,))
+            for row in cur:
+                rowlist=list(row)
+                if rowlist[0]==0 or  security=="NULL" or not username or security.isspace():
+                    raise Exception
+        except Exception:
+            response_message['message']="Answer is wrong"
+        else:
+            cur.execute("select password from user where username=(?)",(username,))
+            for row in cur:
+                rowlist=list(row)
+                response_message['message']="Answer is correct"
+                response_message['password']=rowlist[0]
             
     finally:
         conn.commit()

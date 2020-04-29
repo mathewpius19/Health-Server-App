@@ -20,7 +20,7 @@ def Regist_post():
     conn.execute("create table if not exists 'user'(UID integer primary key AUTOINCREMENT,username varchar(20),password varchar(20),security varchar(20));")
     response_message={"message":"Registration Successful"}
     try:
-        if len(username)<3 or len(security)<5 or len(security)>5:
+        if len(username)<3 or not(len(security)==5):
             raise Exception
         for i in username:
             if not(ord(i)>=65 and ord(i)<=90 or ord(i)>=97 and ord(i)<=122 or ord(i)>=48 and ord(i)<=57 or i=="_"):

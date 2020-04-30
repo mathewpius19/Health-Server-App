@@ -1,4 +1,4 @@
-This is a website used to monitor the Health of your server.
+This is a website made with Flask Library used to determine your remote server's health using psutil library.
 
 prerequisites are:
 python3 

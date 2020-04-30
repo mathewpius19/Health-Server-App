@@ -1,4 +1,4 @@
-This is a website made with Flask Library used to determine your remote server's health using psutil library.
+This is a website made with Flask Library used to determine your remote server's health using psutil library and python.
 
 
 prerequisites are:

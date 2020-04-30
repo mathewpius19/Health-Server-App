@@ -32,7 +32,7 @@ else:
                 SERVER_NAME=SERVER_NAME,
                 cpupercent = cpu_percent,
                 cpu_total = ctime.user + ctime.system,
-                free_Percnt=((disk_usage.free/disk_usage.used)*100),
+                free_Percnt=(disk_usage.percent),
                 bytes_sent = net_io_counters.bytes_sent,
                 bytes_received = net_io_counters.bytes_recv,
                 packets_sent = net_io_counters.packets_sent,
@@ -42,8 +42,8 @@ else:
                 )
 
             return report
-
 if __name__=='__main__':
+
 
     #print(f'starting health report stream for server :\t{SERVER_NAME}')
 

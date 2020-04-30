@@ -303,7 +303,7 @@ def security():
             cur.execute("select exists(select security from 'user' where security=(?))",(security,))
             for row in cur:
                 rowlist=list(row)
-                if rowlist[0]==0 or  security=="NULL" or not username or security.isspace():
+                if rowlist[0]==0 or  security=="NULL" or not security or security.isspace():
                     raise Exception
         except Exception:
             response_message['message']="Answer is wrong"

@@ -46,11 +46,14 @@ def Regist_post():
             cur.execute("select exists(select username from user where username=(?))",(username,))
             for row in cur:
                 rowlist=list(row)
-                if password=="NULL" or not password or password.isspace() or rowlist[0]==1:
+                if password=="NULL" or not password or rowlist[0]==1:
                     raise Exception 
+            for i in password:
+                if i == " ":
+                    raise Exception
         
         except Exception:
-            response_message['message']="Password cannot be NULL or user already exists" 
+            response_message['message']="Password is invalid or user already exists" 
         
         else:       
             try:
@@ -101,8 +104,11 @@ def login_post():
                 rowlist=list(row)
             
             try:
-                if not(rowlist[0]==password) or password=="NULL" or not password or password.isspace():
+                if not(rowlist[0]==password) or password=="NULL" or not password:
                     raise Exception
+                for i in password:
+                    if i == " ":
+                        raise Exception
             
             except Exception:
                 response_message['message']="Password is wrong or NULL"
@@ -135,20 +141,24 @@ def add_server_post():
         cur.execute(f"select exists(select Server_Name from {username}_servers where Server_Name=(?))",(server_name,))
         for row in cur:
             rowlist=list(row)
-            if server_name=="NULL" or  not server_name or server_name.isspace() or rowlist[0]==1:
+            if server_name=="NULL" or  not server_name or rowlist[0]==1:
                 raise Exception
+            for i in server_name:
+                if i == " ":
+                    raise Exception
     
     except Exception:
-        response_message['message']="Server name is NULL or already exists"
+        response_message['message']="Server name is invalid or already exists"
             
     else:
         
         try:
-            if ip_address=='NULL' or not ip_address or ip_address.isspace():
-                raise Exception
+            for i in ip_address:
+                if not(ord(i)>=48 and ord(i)<=57 or i=="."):
+                    raise Exception
         
         except Exception:
-            response_message['message']="IP Address cannot be NULL or empty"
+            response_message['message']="Invalid IP Address"
         
         else:
             conn.execute(f'insert into {username}_servers (IP_Address,Server_Name) values {ip_address,server_name}')
@@ -173,11 +183,13 @@ def remove_server():
         cur.execute(f"select exists(select Server_Name from {username}_servers where Server_Name=(?))",(servername,))
         for row in cur:
             rowlist=list(row)
-            if servername=="NULL" or  not servername or servername.isspace() or rowlist[0]==0:
+            if servername=="NULL" or  not servername or rowlist[0]==0:
                 raise Exception
-    
+            for i in servername:
+                if i == " ":
+                    raise Exception
     except Exception:
-        response_message['message']="Server name is NULL or doesnt exist"
+        response_message['message']="Server name is invalid or doesnt exist"
     
     else:
         conn.execute(f'drop table {username}_{servername}')
@@ -239,8 +251,11 @@ def report():
         cur.execute("select exists(select username from user where username=(?))",(username,))
         for row in cur:
             rowlist=list(row)
-            if username=="NULL" or not username or username.isspace() or rowlist[0]==0:
-                    raise Exception 
+            if username=="NULL" or not username or rowlist[0]==0:
+                    raise Exception
+        for i in username:
+            if i == " ":
+                raise Exception 
     
     except Exception:
         response_message['message']="username cannot be NULL or user doesnt exist"
@@ -253,11 +268,14 @@ def report():
             cur.execute(f"select exists(select Server_Name from {username}_servers where Server_Name=(?))",(server_name,))
             for row in cur:
                 rowlist=list(row)
-                if server_name=="NULL" or not server_name or server_name.isspace() or rowlist[0]==0:
+                if server_name=="NULL" or not server_name or rowlist[0]==0:
                     raise Exception 
+            for i in server_name:
+                if i == " ":
+                    raise Exception
         
         except Exception:
-            response_message['message']="servername cannot be NULL or servername doesnt exist"
+            response_message['message']="servername is invalid or servername doesnt exist"
             return response_message
         
         else:
@@ -283,11 +301,14 @@ def display():
         cur.execute(f"select exists(select Server_Name from {username}_servers where Server_Name=(?))",(servername,))
         for row in cur:
             rowlist=list(row)
-            if servername=="NULL" or not servername or servername.isspace() or rowlist[0]==0:
+            if servername=="NULL" or not servername or rowlist[0]==0:
                 raise Exception 
+        for i in servername:
+            if i == " ":
+                raise Exception
     
     except Exception:
-        health_dict['message']="Server Name is NULL or does not Exist"
+        health_dict['message']="Server Name is invalid or does not Exist"
     
     else:
         
@@ -341,7 +362,10 @@ def security():
         cur.execute("select exists(select username from 'user' where username=(?))",(username,))
         for row in cur:
             rowlist=list(row)
-            if rowlist[0]==0 or  username=="NULL" or not username or username.isspace():
+            if rowlist[0]==0 or  username=="NULL" or not username:
+                raise Exception
+        for i in username:
+            if i == " ":
                 raise Exception
     
     except Exception:
@@ -352,9 +376,11 @@ def security():
             cur.execute("select exists(select security from 'user' where security=(?))",(security,))
             for row in cur:
                 rowlist=list(row)
-                if rowlist[0]==0 or  security=="NULL" or not security or security.isspace():
+                if rowlist[0]==0 or  security=="NULL" or not security:
                     raise Exception
-        
+            for i in security:
+                if i == " ":
+                    raise Exception
         except Exception:
             response_message['message']="Answer is wrong"
         

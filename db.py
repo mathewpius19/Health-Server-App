@@ -19,11 +19,17 @@ def Regist_post():
     conn=sqlite3.connect("Health.db")
     conn.execute("create table if not exists 'user'(UID integer primary key AUTOINCREMENT,username varchar(20),password varchar(20),security varchar(20));")
     response_message={"message":"Registration Successful"}
+    count=0
     try:
         if len(username)<3 or not(len(security)==5):
             raise Exception
         for i in username:
             if not(ord(i)>=65 and ord(i)<=90 or ord(i)>=97 and ord(i)<=122 or ord(i)>=48 and ord(i)<=57 or i=="_"):
+                raise Exception
+        for i in username:
+            if i.isdigit():
+                count+=1
+            if count == len(username):
                 raise Exception
         for i in security:
             if not(ord(i)>=48 and ord(i)<=57):
@@ -303,7 +309,7 @@ def security():
             cur.execute("select exists(select security from 'user' where security=(?))",(security,))
             for row in cur:
                 rowlist=list(row)
-                if rowlist[0]==0 or  security=="NULL" or not username or security.isspace():
+                if rowlist[0]==0 or  security=="NULL" or not security or security.isspace():
                     raise Exception
         except Exception:
             response_message['message']="Answer is wrong"

@@ -11,6 +11,7 @@ Log onto your linux remote server and git clone this repository:
         git clone https://github.com/mathewpius19/Health-Server-App.git
 Move into the Health-Server-App and change necessary permissions of requirements.py and report.py
         
+        cd Health-Server-App
         sudo chmod 777 report.py
         sudo chmod 777 requirements.py
 

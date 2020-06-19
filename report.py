@@ -3,7 +3,7 @@ import requests
 import time
 import sys
 
-STATS_URL = ' http://3.134.78.37:80/report'
+STATS_URL = ' http://18.218.46.65:80/report'
 
 try:
     SERVER_NAME=sys.argv[1]
